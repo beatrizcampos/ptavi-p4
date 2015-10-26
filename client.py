@@ -14,15 +14,14 @@ SERVER = sys.argv[1]
 PORT = sys.argv[2]
 
 # Contenido que vamos a enviar
-LINE = sys.argv[3:]
+LINE = ' '.join(sys.argv[3:])
 
 # Creamos el socket, lo configuramos y lo atamos a un servidor/puerto
 my_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 my_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 my_socket.connect((SERVER, int(PORT)))
 
-s = " "
-print("Enviando: " + s.join(LINE))
+print("Enviando: " + LINE)
 my_socket.send(bytes(str(LINE), 'utf-8') + b'\r\n')
 data = my_socket.recv(1024)
 
