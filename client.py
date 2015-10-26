@@ -21,7 +21,7 @@ my_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 my_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 my_socket.connect((SERVER, int(PORT)))
 
-s = " ";
+s = " "
 print("Enviando: " + s.join(LINE))
 my_socket.send(bytes(str(LINE), 'utf-8') + b'\r\n')
 data = my_socket.recv(1024)
