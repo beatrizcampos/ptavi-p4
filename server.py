@@ -8,7 +8,7 @@ import socketserver
 import sys
 
 
-class EchoHandler(socketserver.DatagramRequestHandler):
+class SIPRegisterHandler(socketserver.DatagramRequestHandler):
     """
     Echo server class
     """
@@ -19,11 +19,13 @@ class EchoHandler(socketserver.DatagramRequestHandler):
         while 1:
             # Leyendo línea a línea lo que nos envía el cliente
             line = self.rfile.read()
-            IP_CLIENT = self.client_address[0]
-            PORT_CLIENT = self.client_address[1]
-            print("El cliente con IP: " + IP_CLIENT
-                  + " y PUERTO: " + str(PORT_CLIENT))
-            print("Nos manda " + line.decode('utf-8'))
+            line_client = line.split(' ')
+       
+            if line_client[0] == 'REGISTER':
+                #Guardamos dirección registrada y la IP en un diccionario
+                direccion = line_client[1].split(':')
+                diccionario = dicc[direccion[1]]
+                print(" Enviamos SIP/2.0 200 OK")
 
             # Si no hay más líneas salimos del bucle infinito
             if not line:
@@ -32,7 +34,8 @@ class EchoHandler(socketserver.DatagramRequestHandler):
 if __name__ == "__main__":
 
     PORT = sys.argv[1]
-    # Creamos servidor de eco y escuchamos
-    serv = socketserver.UDPServer(('', int(PORT)), EchoHandler)
+    diccionario = {}
+    # Creamos servidor SIPRegisterHandler y escuchamos
+    serv = socketserver.UDPServer(('', int(PORT)), SIPRegisterHandler)
     print("Lanzando servidor UDP de eco...")
     serv.serve_forever()
