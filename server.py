@@ -6,6 +6,8 @@ Clase (y programa principal) para un servidor de eco en UDP simple
 
 import socketserver
 import sys
+import json
+import time
 
 
 class SIPRegisterHandler(socketserver.DatagramRequestHandler):
@@ -29,15 +31,37 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
             if line_client[0] == 'REGISTER':
                 #Guardamos dirección registrada y la IP en un diccionario
                 direccion = line_client[1].split(':')
-                diccionario[direccion[1]] = self.client_address[0]
-                print("Enviamos SIP/2.0 200 OK")
-                self.wfile.write(b"SIP/2.0 200 OK" + b'\r\n\r\n')
-                print(diccionario)
+                IP = self.client_address[0]
+                usuario = direccion[1]
+                diccionario[usuario] = IP
+                expires = int(line_client[3])
+                time_actual = int(time.time())
+                time_actual_str = time.strftime('%Y-%m-%d %H:%M:%S',
+                                                time.gmtime(time_actual))
+                time_exp = int(expires + time_actual)
+                time_exp_string = time.strftime('%Y-%m-%d %H:%M:%S',
+                                                time.gmtime(time_exp))
+                value = [IP, time_exp_string]
+                diccionario[usuario] = value
 
-                if line_client[3] == '0':
+                lista = []
+                for Cliente in diccionario:
+                    if time_actual_str >= diccionario[Cliente][1]:
+                        lista.append(Cliente)
+
+                self.wfile.write(b"SIP/2.0 200 OK" + b'\r\n\r\n')
+
+                for usuario in lista:
                     print("Borramos del diccionario")
-                    del diccionario[direccion[1]]
-                    self.wfile.write(b"SIP/2.0 200 OK" + b'\r\n\r\n')
+                    del diccionario[usuario]
+
+                self.register2json()
+
+    def register2json(self):
+        with open('registered.json', 'w') as archivo_json:
+            json.dump(diccionario, archivo_json, sort_keys=True,
+                      indent=4, separators=(',', ': '))
+
 
 if __name__ == "__main__":
 
