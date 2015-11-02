@@ -17,7 +17,6 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
 
     def handle(self):
         self.json2registered()
-        print(diccionario)
         while 1:
             # Leyendo línea a línea lo que nos envía el cliente
             line = self.rfile.read()
@@ -30,12 +29,11 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
                 print("Recibimos peticion")
 
             if line_client[0] == 'REGISTER':
-                #Guardamos dirección registrada y la IP en un diccionario
                 direccion = line_client[1].split(':')
                 IP = self.client_address[0]
                 usuario = direccion[1]
                 diccionario[usuario] = IP
-                expires = int(line_client[3])
+                expires = int(line_client[4])
                 time_actual = int(time.time())
                 time_actual_str = time.strftime('%Y-%m-%d %H:%M:%S',
                                                 time.gmtime(time_actual))
@@ -59,11 +57,18 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
                 self.register2json()
 
     def register2json(self):
+        """
+        Imprimir fichero registered.json
+        con información sobre el usuario
+        """
         with open('registered.json', 'w') as archivo_json:
             json.dump(diccionario, archivo_json, sort_keys=True,
                       indent=4, separators=(',', ': '))
 
     def json2registered(self):
+        """
+        Comprobar si hay un fichero registered.json
+        """
         try:
             with open("registered.json", 'r') as json_fich:
                 datos_json = json.load(json_fich)
