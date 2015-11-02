@@ -19,6 +19,7 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
             # Leyendo línea a línea lo que nos envía el cliente
             line = self.rfile.read()
             line_client = line.decode('utf-8').split()
+
             # Si no hay más líneas salimos del bucle infinito
             if not line:
                 break
@@ -30,8 +31,13 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
                 direccion = line_client[1].split(':')
                 diccionario[direccion[1]] = self.client_address[0]
                 print("Enviamos SIP/2.0 200 OK")
-                self.wfile.write(b"SIP/2.0 200 OK")
+                self.wfile.write(b"SIP/2.0 200 OK" + b'\r\n\r\n')
+                print(diccionario)
 
+                if line_client[3] == '0':
+                    print("Borramos del diccionario")
+                    del diccionario[direccion[1]]
+                    self.wfile.write(b"SIP/2.0 200 OK" + b'\r\n\r\n')
 
 if __name__ == "__main__":
 
