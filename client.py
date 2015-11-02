@@ -8,15 +8,15 @@ import socket
 import sys
 
 # Cliente UDP simple.
-
-# Dirección IP del servidor.
 try:
+    #(SERVER, PORT, METODO, LOGIN, EXPIRES) = sys.argv
     SERVER = sys.argv[1]
     PORT = sys.argv[2]
     METODO = sys.argv[3]
     LOGIN = sys.argv[4]
     EXPIRES = sys.argv[5]
-except IndexError:
+
+except IndexError, ValueError:
     sys.exit("Usage: client.py ip puerto register sip_address expires_value")
 
 # Creamos el socket, lo configuramos y lo atamos a un servidor/puerto
