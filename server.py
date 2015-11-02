@@ -16,7 +16,8 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
     """
 
     def handle(self):
-
+        self.json2registered()
+        print(diccionario)
         while 1:
             # Leyendo línea a línea lo que nos envía el cliente
             line = self.rfile.read()
@@ -61,6 +62,16 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
         with open('registered.json', 'w') as archivo_json:
             json.dump(diccionario, archivo_json, sort_keys=True,
                       indent=4, separators=(',', ': '))
+
+    def json2registered(self):
+        try:
+            with open("registered.json", 'r') as json_fich:
+                datos_json = json.load(json_fich)
+            usuarios = datos_json.keys()
+            for usuario in usuarios:
+                diccionario[usuario] = datos[usuario]
+        except:
+            pass
 
 
 if __name__ == "__main__":
